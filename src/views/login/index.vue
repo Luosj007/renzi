@@ -4,6 +4,7 @@
     <div class="form">
       <h1>登录</h1>
       <el-card shadow="never" class="login-card">
+        <!-- el-form->el-form-item->el-input等 -->
         <el-form ref="form" :model="loginForm" :rules="loginRules">
           <el-form-item prop="mobile">
             <el-input v-model="loginForm.mobile" placeholder="请输入手机号" />
@@ -11,13 +12,13 @@
           <el-form-item prop="password">
             <el-input v-model="loginForm.password" show-password placeholder="请输入密码" />
           </el-form-item>
-          <el-form-item>
-            <el-checkbox>
+          <el-form-item prop="isAgree">
+            <el-checkbox v-model="loginForm.isAgree">
               用户平台使用协议
             </el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-button style="width:350px" type="primary" block>登录</el-button>
+            <el-button style="width:350px" type="primary" block @click="login">登录</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -55,8 +56,27 @@ export default {
           message: '密码长度应该在6-16位之间',
           trigger: 'blur'
         }],
-        isAgree: []
+        // required校验 只能校验 null和undifined和""
+        // validator是一个自定义的校验方式
+        isAgree: [{
+          validator: (rule, value, callback) => {
+            // rule规则
+            // value 检查数据 true or false
+            // callback 函数
+            // 成功执行callback, 失败也执行callback(错误对象 new Error(错误信息))
+            value ? callback() : callback(new Error('没有勾选用户协议'))
+          }
+        }]
       }
+    }
+  },
+  methods: {
+    login() {
+      this.$refs.form.validate((isOK) => {
+        if (isOK) {
+          alert('校验通过')
+        }
+      })
     }
   }
 }
