@@ -36,7 +36,14 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    proxy: {
+      // path对应的目标服务器
+      '/api': {
+        target: 'https://heimahr.itheima.net/'
+      }
+    }
+    // before: require('./mock/mock-server.js')
+    // //这是一个模拟数据，会拦截请求，要注释掉
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
