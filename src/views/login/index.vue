@@ -4,7 +4,8 @@
     <div class="form">
       <h1>登录</h1>
       <el-card shadow="never" class="login-card">
-        <!-- el-form->el-form-item->el-input等 -->
+        <!--登录表单-->
+        <!-- el-form > el-form-item > el-input -->
         <el-form ref="form" :model="loginForm" :rules="loginRules">
           <el-form-item prop="mobile">
             <el-input v-model="loginForm.mobile" placeholder="请输入手机号" />
@@ -18,24 +19,22 @@
             </el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-button style="width:350px" type="primary" block @click="login">登录</el-button>
+            <el-button style="width:350px" type="primary" @click="login">登录</el-button>
           </el-form-item>
         </el-form>
       </el-card>
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: 'Login',
-
   data() {
     return {
       loginForm: {
-        mobile: '',
-        password: '',
-        isAgree: false
+        mobile: process.env.NODE_ENV === 'development' ? '13800000002' : '',
+        password: process.env.NODE_ENV === 'development' ? 'hm#qd@23!' : '',
+        isAgree: process.env.NODE_ENV === 'development'
       },
       loginRules: {
         mobile: [{
@@ -46,6 +45,7 @@ export default {
           pattern: /^1[3-9]\d{9}$/,
           message: '手机号格式不正确',
           trigger: 'blur'
+
         }],
         password: [{
           required: true,
@@ -54,18 +54,18 @@ export default {
         }, {
           min: 6,
           max: 16,
-          message: '密码长度应该在6-16位之间',
+          message: '密码长度应该为6-16位之间',
           trigger: 'blur'
+
         }],
-        // required校验 只能校验 null和undifined和""
-        // validator是一个自定义的校验方式
+        // required只能检测 null undefined ""
         isAgree: [{
           validator: (rule, value, callback) => {
-            // rule规则
-            // value 检查数据 true or false
-            // callback 函数
-            // 成功执行callback, 失败也执行callback(错误对象 new Error(错误信息))
-            value ? callback() : callback(new Error('没有勾选用户协议'))
+            // rule校验规则
+            // value 校验的值
+            // callback 函数 - promise resolve reject
+            // callback() callback(new Error(错误信息))
+            value ? callback() : callback(new Error('您必须勾选用户的使用协议'))
           }
         }]
       }
@@ -73,18 +73,19 @@ export default {
   },
   methods: {
     login() {
-      this.$refs.form.validate((isOK) => {
+      this.$refs.form.validate(async(isOK) => {
         if (isOK) {
-          // 登录
-          // this.$store.dispatch('user/login', this.loginForm)
-          alert('校验通过')
+          await this.$store.dispatch('user/login', this.loginForm)
+          // Vuex 中的action 返回的promise
+          // 跳转主页
+          this.$router.push('/')
         }
       })
     }
+
   }
 }
 </script>
-
 <style lang="scss">
 .login-container {
   display: flex;

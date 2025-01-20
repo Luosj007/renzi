@@ -1,34 +1,35 @@
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login } from '@/api/user'
 const state = {
-  token: getToken()
-  // 为了从缓存中读取初始值
+  token: getToken() // 从缓存中读取初始值
 }
 
 const mutations = {
   setToken(state, token) {
     state.token = token
-    setToken(token)
     // 同步到缓存
+    setToken(token)
   },
   removeToken() {
-    // 为了删除Vuex中的Token
+    // 删除Vuex的token
     state.token = null
     removeToken()
   }
 }
 
 const actions = {
-  // context上下文,传入参数
-  login(context, data) {
+  // context上下文，传入参数
+  async login(context, data) {
     console.log(data)
-    // todo:调用登录接口
-    // 返回一个token
-    context.commit('setToken', '12345')
+    // todo: 调用登录接口
+    const token = await login(data)
+    // 返回一个token 123456
+    context.commit('setToken', token)
   }
 }
 
 export default {
-  namespaced: true,
+  namespaced: true, // 开启命名空间
   state,
   mutations,
   actions
