@@ -2,9 +2,10 @@
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
     <!-- 引入图标 -->
-    <svg-icon icon-class="dashboard" />
+    <!-- <svg-icon icon-class="dashboard" />
     <svg-icon icon-class="example" />
-    <svg-icon icon-class="eye-open" />
+    <svg-icon icon-class="eye-open" /> -->
+    <div>dashboard页面</div>
   </div>
 </template>
 
@@ -17,6 +18,10 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  created() {
+    // console.log('Dashboard created')
+    this.$store.dispatch('user/getUserInfo')
   }
 }
 </script>
