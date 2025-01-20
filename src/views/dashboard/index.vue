@@ -18,10 +18,6 @@ export default {
     ...mapGetters([
       'name'
     ])
-  },
-  created() {
-    // console.log('Dashboard created')
-    this.$store.dispatch('user/getUserInfo')
   }
 }
 </script>
