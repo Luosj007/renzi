@@ -1,12 +1,12 @@
 module.exports = {
 
-  title: '黑马后台管理系统',
+  title: '人力资源管理系统',
 
   /**
    * @type {boolean} true | false
    * @description Whether fix the header
    */
-  fixedHeader: true,
+  fixedHeader: false,
 
   /**
    * @type {boolean} true | false
