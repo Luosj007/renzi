@@ -15,3 +15,12 @@ export function getUserInfo() {
     // 默认方法是get
   })
 }
+
+// 更新密码
+export function updatePassword(data) {
+  return request({
+    url: '/sys/user/updatePass',
+    method: 'put',
+    data
+  })
+}

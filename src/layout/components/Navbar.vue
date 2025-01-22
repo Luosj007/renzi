@@ -6,7 +6,6 @@
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
-        <!--  -->
         <div class="avatar-wrapper">
           <!-- 头像 -->
           <img v-if="avatar" :src="avatar" class="user-avatar">
@@ -22,21 +21,47 @@
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              Home
+              首页
             </el-dropdown-item>
           </router-link>
           <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
+            <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
+          <a target="_blank" @click.prevent="updatePassword">
+            <el-dropdown-item>修改密码</el-dropdown-item>
           </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+          <!--  -->
+          <el-dropdown-item @click.native="logout">
+            <span style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <!-- 放置dialog -->
+    <!-- sync可以接收子组件传过来的事件和值 -->
+    <el-dialog append-to-body width="500px" title="修改密码" :visible.sync="showDialog" @close="btnCancel">
+      <!-- 放置表单 -->
+      <el-form ref="passForm" label-width="120px" :model="passForm" :rules="rules">
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="passForm.oldPassword" show-password size="small" />
+        </el-form-item>
+
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="passForm.newPassword" show-password size="small" />
+        </el-form-item>
+
+        <el-form-item label="重复密码" prop="confirmPassword">
+          <el-input v-model="passForm.confirmPassword" show-password size="small" />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button size="mini" type="primary" @click="btnOK">确认修改</el-button>
+          <el-button size="mini" @click="btnCancel">取消</el-button>
+        </el-form-item>
+
+      </el-form>
+
+    </el-dialog>
   </div>
 </template>
 
@@ -44,11 +69,42 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { updatePassword } from '@/api/user'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      showDialog: false,
+      passForm: {
+        oldPassword: '', // 旧密码
+        newPassword: '', // 新密码
+        confirmPassword: '' // 确认密码字段
+      },
+      rules: {
+        oldPassword: [{ required: true, message: '旧密码不能为空', trigger: 'blur' }], // 旧密码
+        newPassword: [{ required: true, message: '新密码不能为空', trigger: 'blur' }, {
+          trigger: 'blur',
+          min: 6,
+          max: 16,
+          message: '新密码的长度为6-16位之间'
+        }], // 新密码
+        confirmPassword: [{ required: true, message: '重复密码不能为空', trigger: 'blur' }, {
+          trigger: 'blur',
+          validator: (rule, value, callback) => {
+            // value
+            if (this.passForm.newPassword === value) {
+              callback()
+            } else {
+              callback(new Error('重复密码和新密码输入不一致'))
+            }
+          }
+        }] // 确认密码字段
+      }
+    }
   },
   computed: {
     ...mapGetters([
@@ -59,12 +115,34 @@ export default {
     ])
   },
   methods: {
+    updatePassword() {
+      // 弹窗层
+      this.showDialog = true
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
+      // 调用退出登录的action
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push('/login')
+    },
+    // 确定
+    btnOK() {
+      this.$refs.passForm.validate(async isOK => {
+        if (isOK) {
+          // 调用接口
+          await updatePassword(this.passForm)
+          this.$message.success('修改密码成功')
+          // 成功了
+          this.btnCancel()
+        }
+      })
+    },
+    // 取消
+    btnCancel() {
+      this.$refs.passForm.resetFields()
+      this.showDialog = false
     }
   }
 }
@@ -130,13 +208,12 @@ export default {
         position: relative;
         display: flex;
         align-items: center;
-
-         .name{
-           margin-right: 10px;
+        .name {
+          //  用户名称距离右侧距离
+          margin-right: 10px;
           font-size: 16px;
-       }
-
-       .username {
+        }
+        .username {
           width: 30px;
           height: 30px;
           text-align: center;
@@ -146,11 +223,9 @@ export default {
           color: #fff;
           margin-right: 4px;
         }
-
         .el-icon-setting {
           font-size: 20px;
         }
-
         .user-avatar {
           cursor: pointer;
           width: 30px;
