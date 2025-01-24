@@ -11,7 +11,15 @@
       </el-form-item>
 
       <el-form-item prop="managerId" label="部门负责人">
-        <el-select v-model="formData.managerId" placeholder="请选择负责人" style="width: 80%" size="mini" />
+        <el-select v-model="formData.managerId" placeholder="请选择负责人" style="width: 80%" size="mini">
+          <!-- 下拉选项 循环 负责人数据 label表示显示的字段 value 存储字段 -->
+          <el-option
+            v-for="item in managerList"
+            :key="item.id"
+            :label="item.username"
+            :value="item.id"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item prop="introduce" label="部门介绍">
@@ -32,13 +40,16 @@
 </template>
 
 <script>
-import { getDepartment } from '@/api/department'
-import { call } from 'body-parser'
+import { getDepartment, getManageList } from '@/api/department'
 export default {
   props: {
     showDialog: {
       type: Boolean,
       default: false
+    },
+    currentNodeId: {
+      type: Number,
+      default: null
     }
   },
   data() {
@@ -89,10 +100,17 @@ export default {
       }
     }
   },
+  created() {
+    this.getManageList()
+  },
   methods: {
     close() {
       // 修改父组件的值 子传父
       this.$emit('update:showDialog', false)
+    },
+    async getManageList() {
+      const result = await getManageList()
+      this.managerList = result
     }
   }
 }

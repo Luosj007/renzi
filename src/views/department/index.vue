@@ -9,7 +9,8 @@
             <el-col>{{ data.name }}</el-col>
             <el-col :span="4">
               <span class="tree-manager">{{ data.managerName }}</span>
-              <el-dropdown @command="operateDept">
+              <!-- $event实参 -->
+              <el-dropdown @command="operateDept($event,data.id)">
                 <span class="el-dropdown-link">
                   操作<i class="el-icon-arow-doen el-icon--ringt" />
                 </span>
@@ -25,7 +26,7 @@
       </el-tree>
     </div>
     <!-- 放置弹层 -->
-    <add-dept :show-dialog.sync="showDialog" />
+    <add-dept :current-node-id="currentNodeId" :show-dialog.sync="showDialog" />
   </div>
 </template>
 
@@ -38,6 +39,7 @@ export default {
   components: { AddDept },
   data() {
     return {
+      currentNodeId: null,
       showDialog: false,
       depts: [],
       defaultProps: {
@@ -54,10 +56,12 @@ export default {
       const result = await getDepartment()
       this.depts = transListToTreeData(result, 0)
     },
-    operateDept(type) {
+    operateDept(type, id) {
+      console.log(type, id)
       if (type === 'add') {
         // 添加子部门
         this.showDialog = true
+        this.currentNodeId = id
       }
     }
   }
