@@ -29,24 +29,25 @@
 </template>
 
 <script >
+import { getDepartment } from '@/api/department'
 export default {
   name: 'Department',
   data() {
     return {
-      depts: [{ name: '传智教育', managerName: '管理员', children: [{
-        name: '总裁办',
-        managerName: '张三'
-      }, {
-        name: '行政部',
-        managerName: '李四'
-      }, {
-        name: '人事部',
-        managerName: '王五'
-      }] }],
+      depts: [],
       defaultProps: {
         label: 'name',
         children: 'children'
       }
+    }
+  },
+  created() {
+    this.getDepartment()
+  },
+  methods: {
+    async getDepartment() {
+      const result = await getDepartment()
+      this.depts = result
     }
   }
 }
