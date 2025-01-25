@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { getDepartment, getManageList, addDepartment } from '@/api/department'
+import { getDepartmentDetail, getDepartment, getManageList, addDepartment } from '@/api/department'
 export default {
   props: {
     showDialog: {
@@ -125,6 +125,9 @@ export default {
           this.close()
         }
       })
+    },
+    async getDepartmentDetail() {
+      this.formData = await getDepartmentDetail(this.currentNodeId)
     }
   }
 }
