@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="新增部门" :visible="showDialog" @close="close">
+  <el-dialog :title="showTitle" :visible="showDialog" @close="close">
     <!-- 放置弹窗内容 -->
     <el-form ref="addDept" :model="formData" :rules="rules" label-width="120px">
       <el-form-item prop="name" label="部门名称">
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { getDepartmentDetail, getDepartment, getManageList, addDepartment } from '@/api/department'
+import { updateDepartment, getDepartmentDetail, getDepartment, getManageList, addDepartment } from '@/api/department'
 export default {
   props: {
     showDialog: {
@@ -109,6 +109,11 @@ export default {
       }
     }
   },
+  computed: {
+    showTitle() {
+      return this.formData.id ? '编辑部门' : '新增部门'
+    }
+  },
   created() {
     this.getManageList()
   },
@@ -126,11 +131,20 @@ export default {
     btnOK() {
       this.$refs.addDept.validate(async isOK => {
         if (isOK) {
-          await addDepartment({ ...this.formData, pid: this.currentNodeId })
+          let msg = '新增'
+          // 通过formData中的id
+          if (this.formData.id) {
+            // 编辑场景
+            msg = '更新'
+            await updateDepartment(this.formData)
+          } else {
+            // 新增场景
+            await addDepartment({ ...this.formData, pid: this.currentNodeId })
+          }
           // 通知父组件更新
           this.$emit('updateDepartment')
           // 提示消息
-          this.$message.success(`新增部门成功`)
+          this.$message.success(`${msg}部门成功`)
           this.close()
         }
       })

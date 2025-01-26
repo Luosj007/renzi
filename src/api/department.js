@@ -36,3 +36,14 @@ export function getDepartmentDetail(id) {
     mothod: 'put'
   })
 }
+
+/**
+ * 更新
+ */
+export function updateDepartment(data) {
+  return request({
+    method: 'put',
+    url: `/company/department/${data.id}`,
+    data
+  })
+}
