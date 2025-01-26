@@ -68,7 +68,12 @@ export default {
             trigger: 'blur',
             validator: async(rule, value, callback) => {
               // value 就是输入的编码
-              const result = await getDepartment()
+              let result = await getDepartment()
+              // 判断是否是编辑模式
+              if (this.formData.id) {
+                // 编辑场景
+                result = result.filter(item => item.id !== this.formData.id)
+              }
               // 检验result数组中是否存在 value 值
               if (result.some(item => item.code === value)) {
                 callback(new Error('部门中已有此编码'))
@@ -87,7 +92,11 @@ export default {
             trigger: 'blur',
             validator: async(rule, value, callback) => {
               // value 就是输入的编码
-              const result = await getDepartment()
+              let result = await getDepartment()
+              if (this.formData.id) {
+                // 编辑场景
+                result = result.filter(item => item.id !== this.formData.id)
+              }
               // 检验result数组中是否存在 value 值
               if (result.some(item => item.name === value)) {
                 callback(new Error('部门中已有此名称'))
