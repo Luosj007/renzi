@@ -38,12 +38,24 @@ export function getDepartmentDetail(id) {
 }
 
 /**
- * 更新
+ * 改
+ *
  */
 export function updateDepartment(data) {
   return request({
     method: 'put',
     url: `/company/department/${data.id}`,
     data
+  })
+}
+
+/**
+ *
+ * 删除
+ */
+export function delDepartment(id) {
+  return request({
+    method: 'delete',
+    url: `/company/department/${id}`
   })
 }
