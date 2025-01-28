@@ -11,7 +11,7 @@
         <el-table-column prop="name" align="center" width="200" label="角色">
           <template v-slot="{ row }">
             <!-- 条件判断 -->
-            <el-input v-if="row.isEdit" size="mini" />
+            <el-input v-if="row.isEdit" v-model="row.editRow.name" size="mini" />
             <span v-else>{{ row.name }}</span>
           </template>
         </el-table-column>
@@ -19,13 +19,13 @@
           <!-- 自定义列结构 -->
           <!-- 放一个作用域插槽 -->
           <template v-slot="{ row }">
-            <el-switch v-if="row.isEdit" />
+            <el-switch v-if="row.isEdit" v-model="row.editRow.state" :active-value="1" :inactive-value="0" />
             <span>  {{ row.state === 1 ? "已启用" : row.state === 0 ? "未启用" : "无" }} </span>
           </template>
         </el-table-column>
         <el-table-column prop="description" align="center" label="描述">
           <template v-slot="{row}">
-            <el-input v-if="row.isEdit" type="textarea" />
+            <el-input v-if="row.isEdit" v-model="row.editRow.description" size="mini" type="textarea" />
             <span v-else>{{ row.description }}</span>
           </template>
         </el-table-column>
@@ -34,8 +34,8 @@
           <template v-slot="{row}">
             <template v-if="row.isEdit">
               <!-- 编辑状态 -->
-              <el-button size="mini" type="primary">确定</el-button>
-              <el-button size="mini">取消</el-button>
+              <el-button size="mini" type="primary" @click="btnEditOK(row)">确定</el-button>
+              <el-button size="mini" @click="row.isEdit=false">取消</el-button>
             </template>
             <template v-else>
               <!-- 非编辑状态 -->
@@ -83,7 +83,7 @@
   </div>
 </template>
 <script>
-import { addRole, getRoleList } from '@/api/role'
+import { addRole, getRoleList, updateRole } from '@/api/role'
 export default {
   name: 'Role',
   data() {
@@ -121,6 +121,11 @@ export default {
         // 添加的动态属性 不具备响应式特点
         // this.$set(目标对象, 属性名称, 初始值) 可以针对目标对象 添加的属性 添加响应式
         this.$set(item, 'isEdit', false)
+        this.$set(item, 'editRow', {
+          name: item.name,
+          state: item.name,
+          description: item.description
+        })
       })
     },
     // 切换分页，请求新的数据
@@ -145,6 +150,27 @@ export default {
     // 编辑的按钮
     btnEditRow(row) {
       row.isEdit = true // 改变行的编辑状态
+      // 更新缓存的数据
+      row.editRow.name = row.name
+      row.editRow.state = row.state
+      row.editRow.description = row.description
+    },
+    async btnEditOK(row) {
+      if (row.editRow.name && row.editRow.description) {
+        // 执行下一步
+        await updateRole({ ...row.editRow, id: row.id })
+        this.$message.success('更新成功')
+        // 退出编辑状态
+        // eslint-disable-next-line require-atomic-updates
+        // row.name = row.editRow.name
+        // Object.assign(target, source)
+        Object.assign(row, {
+          ...row.editRow,
+          isEdit: false // 退出编辑模式
+        }) // 规避eslint的误判
+      } else {
+        this.$message.warning('角色和描述不能为空')
+      }
     }
   }
 }
