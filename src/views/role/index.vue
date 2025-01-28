@@ -41,7 +41,12 @@
               <!-- 非编辑状态 -->
               <el-button size="mini" type="text">分配权限</el-button>
               <el-button size="mini" type="text" @click="btnEditRow(row)">编辑</el-button>
-              <el-button size="mini" type="text">删除</el-button>
+              <el-popconfirm
+                title="这是一段内容确定删除吗？"
+                @onConfirm="confirmDel(row.id)"
+              >
+                <el-button slot="reference" style="margin-left: 10px;" size="mini" type="text">删除</el-button>
+              </el-popconfirm>
             </template>
           </template>
         </el-table-column>
@@ -83,13 +88,14 @@
   </div>
 </template>
 <script>
-import { addRole, getRoleList, updateRole } from '@/api/role'
+import { delRole, addRole, getRoleList, updateRole } from '@/api/role'
 export default {
   name: 'Role',
   data() {
     return {
       list: [],
-      showDialog: false, //
+      showDialog: false,
+      // 分页的信息放到一个对象里
       pageParams: {
         page: 1, // 页数
         pagesize: 5, // 每页几条
@@ -110,6 +116,7 @@ export default {
     this.getRoleList()
   },
   methods: {
+    // 获取表单数据
     async getRoleList() {
       const { rows, total } = await getRoleList(this.pageParams)
       this.list = rows
@@ -133,6 +140,7 @@ export default {
       this.pageParams.page = newPage
       this.getRoleList()
     },
+    // 新增角色确定
     btnOK() {
       this.$refs.roleForm.validate(async isOK => {
         if (isOK) {
@@ -143,11 +151,12 @@ export default {
         }
       })
     },
+    // 新增角色取消
     btnCancel() {
       this.$refs.roleForm.resetFields() // 重置表单数据
       this.showDialog = false // 关闭弹层
     },
-    // 编辑的按钮
+    // 编辑角色
     btnEditRow(row) {
       row.isEdit = true // 改变行的编辑状态
       // 更新缓存的数据
@@ -155,6 +164,7 @@ export default {
       row.editRow.state = row.state
       row.editRow.description = row.description
     },
+    // 确认编辑角色
     async btnEditOK(row) {
       if (row.editRow.name && row.editRow.description) {
         // 执行下一步
@@ -171,6 +181,15 @@ export default {
       } else {
         this.$message.warning('角色和描述不能为空')
       }
+    },
+    // 删除角色
+    async confirmDel(id) {
+      await delRole(id)
+      this.$message.success('删除角色成功')
+      // 如果删除的是最后一个
+      if (this.list.length === 1) this.pageParams.page--
+      // 重新加载
+      this.getRoleList()
     }
   }
 }
