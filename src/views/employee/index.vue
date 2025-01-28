@@ -55,7 +55,10 @@
         <el-row style="height: 60px" align="middle" type="flex" justify="end">
           <el-pagination
             layout="total,prev, pager, next"
-            :total="1000"
+            :total="total"
+            :current-page="queryParams.page"
+            :page-size="queryParams.pagesize"
+            @current-change="changePage"
           />
         </el-row>
         <!-- wug -->
@@ -79,8 +82,11 @@ export default {
       },
       // 存储查询参数
       queryParams: {
-        departmentId: null
+        departmentId: null,
+        page: 1, // 当前页码
+        pagesize: 10
       },
+      total: 0,
       list: []
     }
   },
@@ -104,11 +110,18 @@ export default {
     },
     selectNode(node) {
       this.queryParams.departmentId = node.id
+      this.queryParams.page = 1
       this.getEmployeeList()
     },
     async getEmployeeList() {
-      const { rows } = await getEmployeeList(this.queryParams)
+      const { rows, total } = await getEmployeeList(this.queryParams)
       this.list = rows
+      this.total = total
+    },
+    // 切换页码
+    changePage(newPage) {
+      this.queryParams.page = newPage
+      this.getEmployeeList()
     }
   }
 }
