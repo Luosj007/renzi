@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 import router from '@/router'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // 基础地址
-  timeout: 10000
+  timeout: 20000
 }) // 创建一个新的axios实例
 // 成功1 失败2
 service.interceptors.request.use((config) => {
@@ -23,7 +23,9 @@ service.interceptors.request.use((config) => {
 // 响应拦截器
 service.interceptors.response.use((response) => {
   // axios默认包裹了data
-  const { data, message, success } = response.data
+  // 判断是不是Blob
+  if (response.data instanceof Blob) return response.data // 返回了Blob对象
+  const { data, message, success } = response.data// 默认json格式
   if (success) {
     return data
   } else {
