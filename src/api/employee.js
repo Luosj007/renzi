@@ -33,3 +33,15 @@ export function getExportTemplate() {
     responseType: 'blob' // 使用
   })
 }
+
+/**
+ * 上传用户的excel
+ *
+*/
+export function uploadExcel(data) {
+  return request({
+    url: '/sys/user/import',
+    method: 'post',
+    data // form-data类型 因为要上传文件类型
+  })
+}
