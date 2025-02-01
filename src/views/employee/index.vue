@@ -54,7 +54,7 @@
           <el-table-column label="操作" width="280px">
             <template v-slot="{row}">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text" @click="btnRole">角色</el-button>
+              <el-button size="mini" type="text" @click="btnRole(row.id)">角色</el-button>
               <el-popconfirm
                 title="确定删除吗？"
                 @onConfirm="confirmDel(row.id)"
@@ -91,13 +91,20 @@
           :label="item.id"
         >{{ item.name }}</el-checkbox>
       </el-checkbox-group>
+      <!-- 按钮  -->
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col :span="6">
+          <el-button type="primary" size="mini" @click="btnRoleOK">确定</el-button>
+          <el-button size="mini" @click="showRoleDialog = false">取消</el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { getDepartment } from '@/api/department'
-import { getEmployeeList, exportEmployee, delEmployee, getEnableRoleList } from '@/api/employee'
+import { getEmployeeList, exportEmployee, delEmployee, getEnableRoleList, getEmployeeDetail, assignRole } from '@/api/employee'
 import { transListToTreeData } from '@/utils'
 import FileSaver from 'file-saver'
 import ImportExcel from './components/import-excel.vue'
@@ -125,7 +132,8 @@ export default {
       showExcelDialog: false, // excel导入弹窗的显示
       showRoleDialog: false, // 角色分配弹窗的显示
       roleList: [], // 接收角色列表
-      roleIds: [] // 接收选中的角色id
+      roleIds: [], // 接收选中的角色id
+      currentUserId: null // 当前点击的员工id
     }
   },
   created() {
@@ -151,6 +159,7 @@ export default {
       this.queryParams.page = 1
       this.getEmployeeList()
     },
+    // 获取员工列表
     async getEmployeeList() {
       const { rows, total } = await getEmployeeList(this.queryParams)
       this.list = rows
@@ -175,7 +184,7 @@ export default {
      *
      * 导出员工的excel
      */
-    async  exportEmployee() {
+    async exportEmployee() {
       const result = await exportEmployee() // 导出所有的员工接口
       // console.log(result) // 使用一个npm包 直接将blob文件下载到本地 file-saver
       // FileSaver.saveAs(blob对象,文件名称)
@@ -188,9 +197,22 @@ export default {
       this.$message.success('删除成功')
     },
     // 点击角色按钮弹出角色分配弹窗
-    async btnRole() {
-      this.showRoleDialog = true
+    async btnRole(id) {
       this.roleList = await getEnableRoleList()
+      // 记录当前点击的id 因为后边 确定取消要存取给对应的用户
+      this.currentUserId = id
+      const { roleIds } = await getEmployeeDetail(id)
+      this.roleIds = roleIds
+      this.showRoleDialog = true // 调整顺序
+    },
+    // 点击角色的确定
+    async  btnRoleOK() {
+      await assignRole({
+        id: this.currentUserId,
+        roleIds: this.roleIds
+      })
+      this.$message.success('分配用户角色成功')
+      this.showRoleDialog = false
     }
   }
 }
