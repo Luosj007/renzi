@@ -33,9 +33,9 @@ const actions = {
   },
   // 获取用户的基本资料
   async getUserInfo(context) {
-    // console.log('调用action')
     const result = await getUserInfo()
     context.commit('setUserInfo', result)
+    return result // 返回数据
   },
   logout(context) {
     context.commit('removeToken')// 删除token
