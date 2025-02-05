@@ -118,8 +118,8 @@ export function param2Obj(url) {
 
 /**
  *
- * 列表数据转换
- */
+ * 列表型数据转化树形
+*/
 
 export function transListToTreeData(list, rootValue) {
   const arr = []

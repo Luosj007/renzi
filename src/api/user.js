@@ -11,12 +11,12 @@ export function login(data) {
 export function getUserInfo() {
   return request({
     url: '/sys/profile'
-    // method: 'get'
-    // 默认方法是get
   })
 }
 
-// 更新密码
+/**
+ * 更新密码
+ * **/
 export function updatePassword(data) {
   return request({
     url: '/sys/user/updatePass',

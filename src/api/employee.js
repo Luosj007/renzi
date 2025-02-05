@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 /**
  * 获取员工列表
- */
+ * **/
 
 export function getEmployeeList(params) {
   return request({
@@ -24,13 +24,13 @@ export function exportEmployee() {
 }
 
 /**
- * 下载员工的导入模板
- */
+ * 下载员工导入模版
+ * **/
 
 export function getExportTemplate() {
   return request({
     url: '/sys/user/import/template',
-    responseType: 'blob' // 使用
+    responseType: 'blob' // 二进制文件流
   })
 }
 
@@ -45,7 +45,6 @@ export function uploadExcel(data) {
     data // form-data类型 因为要上传文件类型
   })
 }
-
 /**
  * 删除员工
  * **/
@@ -58,9 +57,8 @@ export function delEmployee(id) {
 }
 
 /**
- *
  * 新增员工
- */
+ * ***/
 
 export function addEmployee(data) {
   return request({
@@ -81,8 +79,9 @@ export function getEmployeeDetail(id) {
 }
 
 /**
- *  更新员工
- * **/
+ * 更新员工
+ * ***/
+
 export function updateEmployee(data) {
   return request({
     url: `/sys/user/${data.id}`,
@@ -92,7 +91,6 @@ export function updateEmployee(data) {
 }
 
 /**
- *
  * 获取可用的角色
  * **/
 
@@ -104,8 +102,7 @@ export function getEnableRoleList() {
 
 /**
  * 分配员工角色
- *
-***/
+ * ***/
 
 export function assignRole(data) {
   return request({

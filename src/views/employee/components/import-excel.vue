@@ -23,16 +23,12 @@
         </div>
       </div>
     </el-row>
-
     <el-row type="flex" justify="end">
       <!-- update:props属性名，值 直接修改 .sync修饰符的属性值 -->
       <el-button size="mini" type="primary" @click="$emit('update:showExcelDialog', false)">取消</el-button>
     </el-row>
-
   </el-dialog>
-
 </template>
-
 <script>
 import { getExportTemplate, uploadExcel } from '@/api/employee'
 import FileSaver from 'file-saver'
@@ -46,10 +42,11 @@ export default {
   methods: {
     async getTemplate() {
       const data = await getExportTemplate()
-      FileSaver.saveAs(data, '员工导入模板.xlsx') // 下载文件
+      FileSaver.saveAs(data, '员工导入模版.xlsx')
     },
+    // 弹出文件选择器-只有一种方式 通过input file
     handleUpload() {
-      this.$refs['excel-upload-input'].click() // 与直接点等价
+      this.$refs['excel-upload-input'].click() // this.$refs.属性名 和 this.$refs[属性名] 等价
     },
     async uploadChange(event) {
       console.log(event.target.files)
@@ -116,3 +113,4 @@ export default {
       }
     }
 </style>
+

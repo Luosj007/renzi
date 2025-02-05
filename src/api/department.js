@@ -2,8 +2,9 @@ import request from '@/utils/request'
 
 /**
  *
- * 获取数据
- */
+ * 获取组织架构数据
+ *
+*/
 export function getDepartment() {
   return request({
     url: '/company/department'
@@ -11,9 +12,11 @@ export function getDepartment() {
 }
 
 /**
- * 部门负责人
- */
-export function getManageList() {
+ *
+ *  获取部门负责人的数据
+ * **/
+
+export function getManagerList() {
   return request({
     url: '/sys/user/simple'
   })
@@ -30,17 +33,20 @@ export function addDepartment(data) {
   })
 }
 
+/**
+ * 获取部门详情
+ *
+ * ***/
+
 export function getDepartmentDetail(id) {
   return request({
-    url: `/company/department/${id}`,
-    mothod: 'put'
+    url: `/company/department/${id}`
   })
 }
 
-/**
- * 改
- *
- */
+/** *
+ * 更新部门
+ * ***/
 export function updateDepartment(data) {
   return request({
     method: 'put',
@@ -50,9 +56,10 @@ export function updateDepartment(data) {
 }
 
 /**
+ * 删除部门
  *
- * 删除
- */
+*/
+
 export function delDepartment(id) {
   return request({
     method: 'delete',

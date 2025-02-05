@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div class="app-container">
-      <!-- 左树 -->
       <div class="left">
         <el-input
           v-model="queryParams.keyword"
@@ -17,17 +16,16 @@
           ref="deptTree"
           node-key="id"
           :data="depts"
-          :props="defineProps"
+          :props="defaultProps"
           default-expand-all
           :expand-on-click-node="false"
           highlight-current
           @current-change="selectNode"
         />
       </div>
-      <!-- 右表 -->
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button v-permission="'add-employee'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
           <el-button size="mini" @click="showExcelDialog = true">excel导入</el-button>
           <el-button size="mini" @click="exportEmployee">excel导出</el-button>
         </el-row>
@@ -36,7 +34,7 @@
           <el-table-column prop="staffPhoto" align="center" label="头像">
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
-              <span v-else class="username">{{ row.username?.charAt(0) }}</span>
+              <span v-else class="username">{{ row.username.charAt(0) }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="username" label="姓名" />
@@ -52,18 +50,19 @@
           <el-table-column prop="departmentName" label="部门" />
           <el-table-column prop="timeOfEntry" label="入职时间" sortable />
           <el-table-column label="操作" width="280px">
-            <template v-slot="{row}">
+            <template v-slot="{ row }">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
               <el-button size="mini" type="text" @click="btnRole(row.id)">角色</el-button>
               <el-popconfirm
-                title="确定删除吗？"
+                title="确认删除该行数据吗？"
                 @onConfirm="confirmDel(row.id)"
               >
-                <el-button slot="reference" style="margin-left: 10px;" size="mini" type="text">删除</el-button>
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
               </el-popconfirm>
 
             </template>
           </el-table-column>
+
         </el-table>
         <!-- 分页 -->
         <el-row style="height: 60px" align="middle" type="flex" justify="end">
@@ -75,7 +74,6 @@
             @current-change="changePage"
           />
         </el-row>
-        <!-- wug -->
       </div>
     </div>
     <!-- 放置导入组件 -->
@@ -91,7 +89,7 @@
           :label="item.id"
         >{{ item.name }}</el-checkbox>
       </el-checkbox-group>
-      <!-- 按钮  -->
+      <!-- 确定和取消按钮 -->
       <el-row slot="footer" type="flex" justify="center">
         <el-col :span="6">
           <el-button type="primary" size="mini" @click="btnRoleOK">确定</el-button>
@@ -115,8 +113,8 @@ export default {
   },
   data() {
     return {
-      depts: [],
-      defineProps: {
+      depts: [], // 组织数据
+      defaultProps: {
         label: 'name',
         children: 'children'
       },
@@ -125,15 +123,15 @@ export default {
         departmentId: null,
         page: 1, // 当前页码
         pagesize: 10,
-        keyword: '' // 模糊搜索字段
+        keyword: ''
       },
-      total: 0,
-      list: [],
-      showExcelDialog: false, // excel导入弹窗的显示
-      showRoleDialog: false, // 角色分配弹窗的显示
+      total: 0, // 记录员工的总数
+      list: [], // 存储员工列表数据
+      showExcelDialog: false, // 控制excel的弹层显示和隐藏
+      showRoleDialog: false, // 用来控制角色弹层的显示
       roleList: [], // 接收角色列表
-      roleIds: [], // 接收选中的角色id
-      currentUserId: null // 当前点击的员工id
+      roleIds: [], // 用来双向绑定数据的
+      currentUserId: null // 用来记录当前点击的用户id
     }
   },
   created() {
@@ -144,6 +142,7 @@ export default {
       // 递归方法 将列表转化成树形
       // let result = await getDepartment()
       this.depts = transListToTreeData(await getDepartment(), 0)
+      // console.log(this.depts[0])
       this.queryParams.departmentId = this.depts[0].id
       // 设置选中节点
       // 树组件渲染是异步的 等到更新完毕
@@ -155,11 +154,11 @@ export default {
       this.getEmployeeList()
     },
     selectNode(node) {
-      this.queryParams.departmentId = node.id
-      this.queryParams.page = 1
+      this.queryParams.departmentId = node.id // 重新记录了参数
+      this.queryParams.page = 1 // 设置第一页
       this.getEmployeeList()
     },
-    // 获取员工列表
+    // 获取员工列表的方法
     async getEmployeeList() {
       const { rows, total } = await getEmployeeList(this.queryParams)
       this.list = rows
@@ -167,10 +166,10 @@ export default {
     },
     // 切换页码
     changePage(newPage) {
-      this.queryParams.page = newPage
-      this.getEmployeeList()
+      this.queryParams.page = newPage // 赋值新页码
+      this.getEmployeeList() // 查询数据
     },
-    // 输入内容改变时触发
+    // 输入值内容改变时触发
     changeValue() {
       // 单位时间内只执行最后一次
       // this的实例上赋值了一个timer的属性
@@ -180,23 +179,24 @@ export default {
         this.getEmployeeList()
       }, 300)
     },
-    /**
-     *
+    /** *
      * 导出员工的excel
-     */
-    async exportEmployee() {
+     *
+     * **/
+    async  exportEmployee() {
       const result = await exportEmployee() // 导出所有的员工接口
       // console.log(result) // 使用一个npm包 直接将blob文件下载到本地 file-saver
       // FileSaver.saveAs(blob对象,文件名称)
       FileSaver.saveAs(result, '员工信息表.xlsx') // 下载文件
     },
+    // 删除员工方法
     async confirmDel(id) {
       await delEmployee(id)
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
       this.getEmployeeList()
-      this.$message.success('删除成功')
+      this.$message.success('删除员工成功')
     },
-    // 点击角色按钮弹出角色分配弹窗
+    // 点击角色按钮弹出层
     async btnRole(id) {
       this.roleList = await getEnableRoleList()
       // 记录当前点击的id 因为后边 确定取消要存取给对应的用户

@@ -9,14 +9,13 @@
     @change="changeValue"
   />
 </template>
-
 <script>
 import { getDepartment } from '@/api/department'
 import { transListToTreeData } from '@/utils'
 export default {
   props: {
     value: {
-      type: Number,
+      type: Number, // 存储的是部门的id  3 4 5
       default: null
     }
   },

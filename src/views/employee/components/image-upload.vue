@@ -38,16 +38,15 @@ export default {
       }
       return isJPG && isLt2M
     },
-
     // 选择图片上传
     uploadImage(params) {
       console.log(params.file)
       const cos = new COS({
-        SecretId: 'AKIDc3D6i49wTjjSu5zbx2qOffPs3xaw1pNe',
-        SecretKey: '2nHUQ5SYOwDDxRe2A1buwkIabLuDF0Wl'
+        SecretId: 'AKIDDSdjgnjT1NZ3a7VjkfVIwOdfv9IH2b8e',
+        SecretKey: 'WEwe9WJ9vLeq1BHNLLKF5Up10ndUDk24'
       }) // 完成cos对象的初始化
       cos.putObject({
-        Bucket: 'heimacxyxxy-1339468184', // 存储桶名称
+        Bucket: 'heimachengxuyuan-1302806742', // 存储桶名称
         Region: 'ap-nanjing', // 地域名称
         Key: params.file.name, // 文件名称
         StorageClass: 'STANDARD', // 固定值

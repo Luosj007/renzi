@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="app-container">
-      <!-- 角色管理 -->
+      <!-- 角色管理内容 -->
       <div class="role-operate">
-        <el-button size="mini" type="primary" @click="showDialog=true">添加角色</el-button>
+        <el-button size="mini" type="primary" @click="showDialog = true">添加角色</el-button>
       </div>
       <!-- 放置table组件 -->
       <el-table :data="list">
@@ -15,27 +15,27 @@
             <span v-else>{{ row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="state" align="center" width="200px" label="启用">
+        <el-table-column prop="state" align="center" width="200" label="启用">
           <!-- 自定义列结构 -->
-          <!-- 放一个作用域插槽 -->
           <template v-slot="{ row }">
+            <!-- 开 1 关 0 -->
             <el-switch v-if="row.isEdit" v-model="row.editRow.state" :active-value="1" :inactive-value="0" />
-            <span>  {{ row.state === 1 ? "已启用" : row.state === 0 ? "未启用" : "无" }} </span>
+            <span v-else>  {{ row.state === 1 ? "已启用" : row.state === 0 ? "未启用" : "无" }} </span>
           </template>
         </el-table-column>
         <el-table-column prop="description" align="center" label="描述">
-          <template v-slot="{row}">
+          <template v-slot="{ row }">
             <el-input v-if="row.isEdit" v-model="row.editRow.description" size="mini" type="textarea" />
             <span v-else>{{ row.description }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作">
-          <!-- 下面是操作的按钮 -->
-          <template v-slot="{row}">
+          <!-- 放置操作按钮 -->
+          <template v-slot="{ row }">
             <template v-if="row.isEdit">
               <!-- 编辑状态 -->
-              <el-button size="mini" type="primary" @click="btnEditOK(row)">确定</el-button>
-              <el-button size="mini" @click="row.isEdit=false">取消</el-button>
+              <el-button type="primary" size="mini" @click="btnEditOK(row)">确定</el-button>
+              <el-button size="mini" @click="row.isEdit = false">取消</el-button>
             </template>
             <template v-else>
               <!-- 非编辑状态 -->
@@ -45,14 +45,15 @@
                 title="这是一段内容确定删除吗？"
                 @onConfirm="confirmDel(row.id)"
               >
-                <el-button slot="reference" style="margin-left: 10px;" size="mini" type="text">删除</el-button>
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
               </el-popconfirm>
             </template>
           </template>
         </el-table-column>
       </el-table>
       <!-- 放置分页组件 -->
-      <el-row type="flex" style="height: 60px;" align="middle" justify="end">
+      <el-row type="flex" style="height:60px" align="middle" justify="end">
+        <!-- 放置分页组件 -->
         <el-pagination
           :page-size="pageParams.pagesize"
           :current-page="pageParams.page"
@@ -67,18 +68,20 @@
       <!-- 表单内容 -->
       <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="120px">
         <el-form-item prop="name" label="角色名称">
-          <el-input v-model="roleForm.name" style="width: 300px;" size="mini" />
+          <el-input v-model="roleForm.name" style="width:300px" size="mini" />
         </el-form-item>
         <el-form-item label="启用" prop="state">
-          <el-switch v-model="roleForm.state" :inactive-value="0" :active-value="1" size="mini" />
+          <!-- 重置表单数据 需要prop属性 -->
+          <!-- 如果不需要校验 就不需要写 prop属性 -->
+          <el-switch v-model="roleForm.state" :active-value="1" :inactive-value="0" size="mini" />
         </el-form-item>
         <el-form-item prop="description" label="角色描述">
-          <el-input v-model="roleForm.description" type="textarea" :rows="3" style="width: 300px;" size="mini" />
+          <el-input v-model="roleForm.description" type="textarea" :rows="3" style="width:300px" size="mini" />
         </el-form-item>
         <el-form-item>
           <el-row type="flex" justify="center">
             <el-col :span="12">
-              <el-button size="mini" type="primary" @click="btnOK">确定</el-button>
+              <el-button type="primary" size="mini" @click="btnOK">确定</el-button>
               <el-button size="mini" @click="btnCancel">取消</el-button>
             </el-col>
           </el-row>
@@ -86,8 +89,8 @@
       </el-form>
     </el-dialog>
     <!-- 放置权限弹层 -->
-    <el-dialog :visible.sync="showPermissionDialog" title="分配权限" width="50%">
-      <!-- 权限弹层 -->
+    <el-dialog :visible.sync="showPermissionDialog" title="分配权限">
+      <!-- 放置权限数据 -->
       <el-tree
         ref="permTree"
         check-strictly
@@ -108,7 +111,7 @@
   </div>
 </template>
 <script>
-import { delRole, addRole, getRoleList, updateRole, getRoleDetail, assignPerm } from '@/api/role'
+import { getRoleList, addRole, updateRole, delRole, getRoleDetail, assignPerm } from '@/api/role'
 import { getPermissionList } from '@/api/permission'
 import { transListToTreeData } from '@/utils'
 export default {
@@ -116,21 +119,22 @@ export default {
   data() {
     return {
       list: [],
-      showDialog: false,
-      // 分页的信息放到一个对象里
+      showDialog: false, // 控制弹层显示隐藏
+      // 将分页信息放置到一个对象中
       pageParams: {
-        page: 1, // 页数
-        pagesize: 5, // 每页几条
+        page: 1, // 第几页
+        pagesize: 5, // 每页多少条
         total: 0
       },
       roleForm: {
         name: '',
         description: '',
-        state: 0
+        state: 0 // 默认未1启用 关闭 0 打开1
       },
       rules: {
         name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }],
         description: [{ required: true, message: '角色描述不能为空', trigger: 'blur' }]
+
       },
       showPermissionDialog: false,
       permissionData: [],
@@ -142,12 +146,11 @@ export default {
     this.getRoleList()
   },
   methods: {
-    // 获取表单数据
     async getRoleList() {
       const { rows, total } = await getRoleList(this.pageParams)
-      this.list = rows
+      this.list = rows // 赋值数据
       this.pageParams.total = total
-      // 针对每行数据添加一个编辑标记
+      // 针对每一行数据添加一个编辑标记
       this.list.forEach(item => {
         // item.isEdit = false // 添加一个属性 初始值为false
         // 数据响应式的问题  数据变化 视图更新
@@ -156,17 +159,16 @@ export default {
         this.$set(item, 'isEdit', false)
         this.$set(item, 'editRow', {
           name: item.name,
-          state: item.name,
+          state: item.state,
           description: item.description
         })
       })
     },
-    // 切换分页，请求新的数据
+    // 切换分页时 请求新的数据
     changePage(newPage) {
-      this.pageParams.page = newPage
+      this.pageParams.page = newPage // 赋值当前页码
       this.getRoleList()
     },
-    // 新增角色确定
     btnOK() {
       this.$refs.roleForm.validate(async isOK => {
         if (isOK) {
@@ -177,28 +179,27 @@ export default {
         }
       })
     },
-    // 新增角色取消
     btnCancel() {
       this.$refs.roleForm.resetFields() // 重置表单数据
       this.showDialog = false // 关闭弹层
     },
-    // 编辑角色
+    // 点击编辑行
     btnEditRow(row) {
       row.isEdit = true // 改变行的编辑状态
-      // 更新缓存的数据
+      // 更新缓存数据
       row.editRow.name = row.name
       row.editRow.state = row.state
       row.editRow.description = row.description
     },
-    // 确认编辑角色
-    async btnEditOK(row) {
+    // 点击确定时触发
+    async  btnEditOK(row) {
       if (row.editRow.name && row.editRow.description) {
-        // 执行下一步
+        // 下一步操作
         await updateRole({ ...row.editRow, id: row.id })
-        this.$message.success('更新成功')
-        // 退出编辑状态
-        // eslint-disable-next-line require-atomic-updates
-        // row.name = row.editRow.name
+        // 更新成功
+        this.$message.success('更新角色成功')
+        // 更新显示数据  退出编辑状态
+        // row.name = row.editRow.name // eslint的一校验 误判
         // Object.assign(target, source)
         Object.assign(row, {
           ...row.editRow,
@@ -208,11 +209,11 @@ export default {
         this.$message.warning('角色和描述不能为空')
       }
     },
-    // 删除角色
-    async confirmDel(id) {
-      await delRole(id) // 后端删除角色
+    // 点击了确定触发的
+    async  confirmDel(id) {
+      await delRole(id) // 后端删除
       this.$message.success('删除角色成功')
-      // 如果删除的是最后一个
+      // 删除的如果是最后一个
       if (this.list.length === 1) this.pageParams.page--
       this.getRoleList()
     },
@@ -221,7 +222,7 @@ export default {
       const { permIds } = await getRoleDetail(id)
       this.permIds = permIds
       this.permissionData = transListToTreeData(await getPermissionList(), 0)
-      this.showPermissionDialog = true// 先获取数据，再打开弹层
+      this.showPermissionDialog = true
     },
     // 点击确定时触发
     async  btnPermissionOK() {
@@ -235,9 +236,8 @@ export default {
   }
 }
 </script>
-
 <style scoped>
-.role-operate{
-padding: 10px;
+.role-operate {
+  padding: 10px;
 }
 </style>

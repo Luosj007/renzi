@@ -22,7 +22,7 @@ export function addRole(data) {
   })
 }
 
-/** **
+/**
  * 更新角色
  * ***/
 
@@ -34,9 +34,9 @@ export function updateRole(data) {
   })
 }
 
-/** **
+/** *
  * 删除角色
- * ***/
+ * **/
 
 export function delRole(id) {
   return request({

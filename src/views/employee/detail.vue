@@ -3,26 +3,25 @@
     <div class="app-container">
       <div class="edit-form">
         <el-form ref="userForm" :model="userInfo" :rules="rules" label-width="220px">
-          <!-- 姓名 部门 -->
+          <!-- 姓名 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="姓名" prop="username">
                 <el-input v-model="userInfo.username" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
-          </el-row>
 
-          <!-- 工号 入职时间 -->
+          </el-row>
+          <!-- 工号 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="工号" prop="workNumber">
-                <!-- 工号不能被编写 -->
+                <!-- 工号是系统生成的  禁用这个组件-->
                 <el-input v-model="userInfo.workNumber" disabled size="mini" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
-
-          <!--手机 聘用形式  -->
+          <!--手机  -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="手机" prop="mobile">
@@ -35,8 +34,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-
-          <!-- 部门 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="部门" prop="departmentId">
@@ -44,11 +41,8 @@
                 <!-- inputW样式会给到selectTree中 template第一层的组件 -->
                 <select-tree v-model="userInfo.departmentId" class="inputW" />
               </el-form-item>
-
             </el-col>
           </el-row>
-
-          <!-- 聘用形式 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="聘用形式" prop="formOfEmployment">
@@ -59,8 +53,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-
-          <!-- 入职时间 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="入职时间" prop="timeOfEntry">
@@ -74,8 +66,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-
-          <!-- 转正时间 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="转正时间" prop="correctionTime">
@@ -88,32 +78,26 @@
               </el-form-item>
             </el-col>
           </el-row>
-
           <!-- 员工照片 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="员工头像">
-                <!-- 放置上传图片-单独封装 -->
+                <!-- 放置上传图片 -->
                 <image-upload v-model="userInfo.staffPhoto" />
               </el-form-item>
             </el-col>
           </el-row>
-
           <!-- 保存个人信息 -->
           <el-row type="flex">
             <el-col :span="12" style="margin-left:220px">
               <el-button size="mini" type="primary" @click="saveData">保存更新</el-button>
             </el-col>
           </el-row>
-
         </el-form>
-
       </div>
 
     </div>
-
   </div>
-
 </template>
 
 <script>
@@ -193,13 +177,14 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-    .edit-form {
-      background: #fff;
-      padding: 20px;
-      .inputW {
-        width: 380px
-      }
+  <style scoped lang="scss">
+  .edit-form {
+    background: #fff;
+    padding: 20px;
+    .inputW {
+      width: 380px
     }
+  }
 
-</style>
+  </style>
+
